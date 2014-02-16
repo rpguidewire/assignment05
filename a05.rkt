@@ -3,6 +3,7 @@
 #reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname a05) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ())))
 (require "namelist.rkt")
 
+  
 ;(first name-list)
 ;(first (rest name-list))
 
@@ -204,7 +205,8 @@
 (define (printstar lst)
   (cond
     [(empty? lst) empty]
-    [(= 0 (first lst)) (cons #\newline (printstar (rest lst)))]
+    [(>= 0 (first lst)) (cons #\newline (printstar (rest lst)))]
+   ; [(= 0 (first lst)) (cons #\newline (printstar (rest lst)))]
     [else (cons #\* (printstar (cons (sub1 (first lst)) (rest lst))))]))
 
 ;;Tests 
@@ -215,10 +217,67 @@
 
 (check-expect (printstar (list 0 0 0)) (list #\newline #\newline #\newline ))
 
-;;Question 7
-(define (diaplay-results lst)
-  (display (bar-graph lst)))
+;;Trial 1A
+;(define (display-results lst)
+;  (display (bar-graph lst)))
 
+
+;;QQuestion 7
+
+(define (name-popularity-graph namelst name gender)
+  (bar-graph(display-list (insert-missing-decades 
+                 1890 
+                 2000
+                (decade-sort (collect-name namelst name gender))))))
+
+(define (decade-sort lst)
+  (cond 
+    [(empty? lst) empty]
+    [else (decade-insert (first lst) (decade-sort (rest lst)))]))
+
+(define (decade-insert k slst)
+  (cond 
+    [(empty? slst) (cons k empty)]
+    [(< (nameinfo-decade k) (nameinfo-decade (first slst))) (cons k slst)]
+    [else (cons (first slst) (decade-insert k (rest slst)))]))
+
+(define (display-list sloni)
+  (cond 
+    [(empty? sloni) empty]
+    [else 
+     (cons (- 67 (floor (/ (nameinfo-rank (first sloni)) 15)))
+           (display-list (rest sloni)))]))
+
+;;Bonus Question!!!! 
+
+(define (print-decade)
+  (list->string (printstar lst)))
+
+(define (printstar lst)
+  (cond
+    [(empty? lst) empty]
+    [(>= 0 (first lst)) (cons #\newline (printstar (rest lst)))]
+   ; [(= 0 (first lst)) (cons #\newline (printstar (rest lst)))]
+    [else (cons #\* (printstar (cons (sub1 (first lst)) (rest lst))))]))
+
+(define (year-popularity-graph namelst name gender)
+  (bar-graph(add-year
+             (display-list 
+             (insert-missing-decades 
+                 1890 
+                 2000
+                (decade-sort (collect-name namelst name gender)))))))
+
+
+(define (bar-graph-year lst)
+  (list->string (printstar lst)))
+
+
+(define (printstar-year lst)
+  (cond
+    [(empty? lst) empty]
+    [(>= 0 (first lst)) (cons #\newline (printstar (rest lst)))]
+    [else (cons #\* (printstar (cons (sub1 (first lst)) (rest lst))))]))
 
 
 
